@@ -5,6 +5,7 @@
 ssh-keygen
 # Work through the interactive prompt
 ```
+- Copy the client's public key (`~/.ssh/id_rsa.pub`) into `/home/remote_client/.ssh/authorized_keys` on the server.
 - Copy `remote_admin`'s public key ([https://pi.lan/id_rsa.pub]) into `~/.ssh/authorized_keys`
 ```sh
 cat ~/Downloads/id_rsa.pub ~/.ssh/authorized_keys
@@ -35,4 +36,7 @@ ssh -N -R 0:localhost:22 remote_admin@pi.lan
 # Server
 ssh -p <dynamic_port> remote_user@localhost
 ```
+
+# Temporary Notes:
+- Client script depends `python3-parse`
 

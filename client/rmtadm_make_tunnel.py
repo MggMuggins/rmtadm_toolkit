@@ -3,24 +3,40 @@
 import json
 import logging
 from os import getuid
+import parse
 from pwd import getpwuid
 from subprocess import PIPE, Popen
 import signal
+import socket
 import sys
 from time import sleep
 
+def get_port_from(stream):
+    """
+    Read the ssh port response to determine what port the admin should
+    connect to on the server
+    """
+    fmt = "Allocated port {} for remote forward to {}:{}"
+    
+    line = stream.readline().decode()
+    
+    rslt = parse.parse(fmt, line.strip())
+    if rslt is None:
+        line = stream.readline().decode()
+        rslt = parse.parse(fmt, line)
+    return rslt[0]
+
+
 proc = Popen(
-    ["ssh", "-R", "0:localhost:22", "remote_admin@pi.lan", "rmtadm_connect_client.py todd"],
+    ["ssh", "-R", "0:localhost:22", "remote_client@pi.lan"],
     stdout=sys.stdout,
     stdin=PIPE,
     stderr=PIPE,
 )
 
-stderr = proc.stderr.readline().decode()
-print(stderr) # ssh dynamic port assignment response
-
 info = {
-    "port": stderr.split()[2].strip(),
+    "hostname": socket.gethostname(),
+    "port": get_port_from(proc.stderr),
     "username": getpwuid(getuid()).pw_name,
 }
 info = json.dumps(info)
