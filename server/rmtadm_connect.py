@@ -5,7 +5,11 @@ from os import path
 import subprocess
 import sys
 
-client_file = path.join("/var/run/remote_admin/", sys.argv[1] + ".client")
+if len(sys.argv) < 2:
+    print("Please provide a client hostname")
+    exit(1)
+
+client_file = path.join("/var/run/rmtadm/", sys.argv[1] + ".client")
 
 with open(client_file) as client:
     info = json.loads(client.readline().strip())

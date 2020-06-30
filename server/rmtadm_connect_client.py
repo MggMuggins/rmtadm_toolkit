@@ -1,20 +1,20 @@
 #!/usr/bin/python3
 
+import json
 from os import path, remove
 import sys
 import time
 
-client = sys.argv[1]
+print("Client dialed in")
 
-print("Client dialed in as {}".format(client), file=sys.stderr)
+info_raw = sys.stdin.readline()
+info = json.loads(info_raw)
 
-port = sys.stdin.readline()
+print("Recieved info: {}".format(info), file=sys.stderr)
 
-print("Recieved port: {}".format(port), file=sys.stderr)
-
-client_file = path.join("/var/run/remote_admin/", client + ".client")
+client_file = path.join("/var/run/rmtadm/", info["hostname"] + ".client")
 with open(client_file, "w") as client_fd:
-    client_fd.write(port)
+    client_fd.write(info_raw)
 
 print("Client file written, waiting for interrupt", file=sys.stderr)
 
