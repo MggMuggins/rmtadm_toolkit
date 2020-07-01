@@ -51,6 +51,7 @@ print('Info sent to server')
 def send_sigint_to_connect_client(_, __):
     proc.stdin.write("SIGINT\n".encode())
     proc.stdin.flush()
+    proc.send_signal(signal.SIGINT)
 signal.signal(signal.SIGINT, send_sigint_to_connect_client)
 
 for line in iter(proc.stderr.readline, b''):
