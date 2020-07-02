@@ -40,15 +40,15 @@ info = {
     "username": getpwuid(getuid()).pw_name,
 }
 info = json.dumps(info)
-print(f"Client Info: {info}")
 
 proc.stdin.write(info.encode() + b"\n")
 proc.stdin.flush()
 
-print('Info sent to server')
+print(f"Client Info Sent: {info}")
 
 # Kill the server connect_client process when we exit
 def send_sigint_to_connect_client(_, __):
+    # Any content will do, the server process just waits for a read to exit
     proc.stdin.write("SIGINT\n".encode())
     proc.stdin.flush()
     proc.send_signal(signal.SIGINT)

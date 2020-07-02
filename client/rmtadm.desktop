@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=rmtadm
+GenericName=Connect Remote Admin
+Comment=Open a Connection to your Remote Administrator
+Exec=/usr/local/bin/rmtadm_window.py
+Icon=/usr/local/share/rmtadm/gearhead.png
+Type=Application
+Categories=Admin;Utility;
+
