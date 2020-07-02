@@ -1,0 +1,5 @@
+Package: rmtadm-client
+Depends: python3-parse
+Description: Client Configuration package for the rmtadm toolkit
+  Includes a GUI program which opens a 2-way ssh tunnel to the server
+
