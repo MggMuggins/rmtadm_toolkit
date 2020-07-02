@@ -14,5 +14,11 @@ client_file = path.join("/var/run/rmtadm/", sys.argv[1] + ".client")
 with open(client_file) as client:
     info = json.loads(client.readline().strip())
 
-subprocess.run(["ssh", "-p", info["port"], info["username"] + "@localhost"], stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+ssh = ["ssh", 
+       "-p", info["port"], 
+       "-o", "UserKnownHostsFile /dev/null",
+       "-o", "StrictHostKeyChecking no",
+       info["username"] + "@localhost"]
+
+subprocess.run(ssh, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
 
