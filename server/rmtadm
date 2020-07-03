@@ -1,0 +1,23 @@
+#!/usr/bin/python3
+
+import argparse
+import rmtadm
+
+parser = argparse.ArgumentParser(description="rmtadm server toolkit")
+#subparsers = parser.add_subparsers(required=True)  # Python 3.7+
+subparsers = parser.add_subparsers()
+
+connect = subparsers.add_parser("connect", dest="connect", help="Connect to a connected client")
+connect.add_argument("client_hostname", type=str, help="Hostname of the client")
+
+list = subparsers.add_parser("list", dest="list", help="Show all connected clients")
+
+argvals = vals(parser.parse_args())
+
+print(argvals)
+
+if 'connect' in argvals:
+    rmtadm.connect(argvals['client_hostname'])
+elif 'list' in argvals:
+    rmtadm.list()
+
