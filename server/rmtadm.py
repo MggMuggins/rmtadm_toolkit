@@ -23,5 +23,8 @@ def connect(client_hostname):
     subprocess.run(ssh, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
 
 def list():
-    print(os.listdir(CONNECTIONS_DIR))
+    for conn_file in os.listdir(CONNECTIONS_DIR):
+        with open(path.join(CONNECTIONS_DIR, conn_file)) as conn_file:
+            info = json.loads(conn_file.read())
+            print(f"{info['username']}@{info['hostname']} (available at localhost:{info['port']})")
 
