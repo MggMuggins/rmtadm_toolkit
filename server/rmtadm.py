@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import json
+import os
 from os import path
 import subprocess
 import sys
@@ -22,5 +23,5 @@ def connect(client_hostname):
     subprocess.run(ssh, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
 
 def list():
-    os.listdir(CONNECTIONS_DIR)
+    print(os.listdir(CONNECTIONS_DIR))
 
