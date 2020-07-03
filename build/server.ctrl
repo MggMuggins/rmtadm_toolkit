@@ -1,0 +1,5 @@
+Package: rmtadm-server
+Depends: openssh-server
+Description: Server configuration and tools for the rmtadm_toolkit
+  Provides CLI tools to ease connecting to two-way ssh processes
+

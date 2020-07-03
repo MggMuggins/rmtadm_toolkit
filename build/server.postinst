@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+# Script: server.postinst
+#
+
+# Exit on error; Print Commands
+set -ex
+
+# TODO: Set this at build time
+INSTALL_PREFIX=/usr/local
+
+REMOTE_CLIENT_USR=remote_client
+REMOTE_CLIENT_HOME=/var/opt/remote_client
+
+getent passwd $REMOTE_CLIENT_USR
+
+if [[ "$?" != 0 ]]; then
+    addUser --disabled-password \
+        --home $REMOTE_CLIENT_HOME \
+        --shell ${INSTALL_PREFIX}/bin/rmtadm_connect_client.py \
+	--gecos "rmtadm Remote Client" \
+	$REMOTE_CLIENT_USR
+fi
+
