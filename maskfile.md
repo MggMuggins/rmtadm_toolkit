@@ -4,15 +4,27 @@
 > Remove build files
 
 **OPTIONS**
+* target
+  * flags: -t --target
+  * type: string
+  * desc: Clean only one of `client` or `server`
 * rm_debs
   * flags: -d --rm_debs
   * type: boolean
   * desc: Remove deb package files in the project root
 ```bash
-set -x
+set -ex # Exit on any failure
+shopt -s extglob
 
-rm -r client/.build
-rm -r server/.build
+function clean_target() {
+    rm -rf ${1}/.build
+}
+
+case "$target" in
+    @(client|server)) clean_target $target ;;
+    !()) echo "Unrecognized option for --target" ;;
+    *) clean_target client; clean_target server ;;
+esac
 
 if [[ "$rm_debs" == "true" ]]; then
     rm *.deb
@@ -22,57 +34,38 @@ fi
 ## build
 > Build both client and server .deb packages
 
+Use `mask build -t <client|server>` to build only one of the sides
+
 **OPTIONS**
+* target
+  * flags: -t --target
+  * type: string
+  * desc: Build only one of `client` or `server`
 * install_prefix
   * flags: -i --install_prefix
   * type: string
   * desc: Alternative install prefix, defaults to /usr/local
 
 ```bash
-echo Building Client
-$MASK build target client
-echo Building Server
-$MASK build target server
-```
+set -ex
+shopt -s extglob
 
-### build client
-> Alias for `mask build target client`
+function build_target() {
+    $MASK clean -t $1 # Make sure there's no leftovers from last time...
+    $MASK build dirstructure-$1
+    $MASK build ctrl_file $1
+    #dpkg-deb --build ${1}/.build/ .
+}
 
-**OPTIONS**
-* install_prefix
-  * flags: -i --install_prefix
-  * type: string
-  * desc: Alternative install prefix, defaults to /usr/local
-```bash
-$MASK build target client
-```
-
-### build server
-> Alias for `mask build target server`
-
-**OPTIONS**
-* install_prefix
-  * flags: -i --install_prefix
-  * type: string
-  * desc: Alternative install prefix, defaults to /usr/local
-```bash
-$MASK build target server
-```
-
-### build target (target)
-> Build a `.deb` package to perform setup operations for `target = (client|server)`
-
-**OPTIONS**
-* install_prefix
-  * flags: -i --install_prefix
-  * type: string
-  * desc: Alternative install prefix, defaults to /usr/local
-```bash
-set -ex # Exit on any failure
-
-$MASK build dirstructure-$target
-$MASK build ctrl_file $target
-dpkg-deb --build ${target}/.build/ .
+case "$target" in
+    @(client|server)) build_target ${target} ;;
+    !()) echo "Unknown option for --target" ;;
+    *)  echo "Building Client"
+        build_target client
+        echo "Building Server"
+        build_target server
+        ;;
+esac
 ```
 
 ### build ctrl_file (target)
@@ -127,8 +120,9 @@ fakeroot = 'server/.build'
 install_prefix = os.environ.get('install_prefix', '/usr/local/')
 
 files = {
-    'rmtadm_connect_client.py': ('bin/', 0o755),
-    'rmtadm_connect.py':        ('bin/', 0o755),
+    'rmtadm_connect_client.py': ('bin/',                       0o755),
+    'rmtadm.py':                ('lib/python3/dist-packages/', 0o644),
+    'rmtadm':                   ('bin/',                       0o755),
 }
 
 from build.dirstructure import build_dirstructure
